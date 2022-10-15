@@ -1,5 +1,3 @@
-// not sure what kind of naming convention will be better
-
 const BASE_URL = `https://flyapi.onrender.com/`;
 const airline = 'delta';
 const airportCodes = [
@@ -23,13 +21,15 @@ const endPoint = (flight) => {
 
 const getFilghtsJson = async () => {
   const responses = await Promise.all(
-    filghts
+    airportCodes
       .filter((flight) => endPoint(flight))
       .map(async (flight) => {
         const response = await fetch(endPoint(flight));
         const dataJson = await response.json();
-        dataJson.origin = flight.origin;
-        dataJson.destination = flight.destination;
+        [dataJson.origin, dataJson.destination] = [
+          flight.origin,
+          flight.destination,
+        ];
         return dataJson;
       })
   );
@@ -44,15 +44,12 @@ const createDOM = (data) => {
   const priceEl = document.createElement('p');
   logoEl.setAttribute('src', 'https://logo.clearbit.com/delta.com');
   const { price, origin, destination } = data;
-  priceEl.innerText = `$${price}`;
-  routeEl.textContent = `${origin} `;
-  routeEl.textContent += `${destination}`;
+  priceEl.textContent = `$${price}`;
+  routeEl.textContent = `${origin} ${destination}`;
 
   // layout and styling
-  searchEl.style.display = 'flex';
-  searchEl.style.gap = '1rem';
-  logoEl.style.width = '40px';
-  logoEl.style.height = '40px';
+  searchEl.style.cssText = 'display:flex; gap:1rem';
+  logoEl.style.cssText = 'width:40px; height:40px';
   priceEl.style.fontWeight = '600';
   searchEl.append(logoEl, routeEl, priceEl);
   deltaEl.appendChild(searchEl);
